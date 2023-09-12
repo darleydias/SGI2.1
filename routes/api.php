@@ -73,6 +73,7 @@ Route::post('/omie', [OmieController::class, 'store']);
 
 ##### USUÁRIO #####
  Route::get('/usuario/{id}/grupos',[GrupoController::class,'listaGruposUsuario']);/**  LISTA GRUPOS DE UM USUARIO EM UM GRUPO **/
+Route::delete('/usuario/grupo',[GrupoController::class,'excluiUsuarioGrupo']);/**  EXCLUI UM REGISTRO NA TABELA DE UM USUARIO EM UM GRUPO **/
  Route::delete('/usuario/{id}',[AuthController::class,'destroy']);
  Route::get('/usuario',[AuthController::class,'index']);
  //  ##################    INICIO - ROTAS LOGADAS E AUTORIZADAS    ##################
@@ -81,7 +82,7 @@ Route::post('/omie', [OmieController::class, 'store']);
     //Route::get('/usuario',[AuthController::class,'index'])->middleware(PermissaoMiddleware::class);
  });
  //  ##################    FIM - ROTAS LOGADAS E AUTORIZADAS    ##################
- Route::delete('/usuario/grupo',[GrupoController::class,'excluiUsuarioGrupo']);/**  EXCLUI UM REGISTRO NA TABELA DE UM USUARIO EM UM GRUPO **/
+
  Route::post('/usuario/grupo',[GrupoController::class,'usuarioGrupo']); // Insere um usuário e grupo na tabela pivot
  Route::get('/usuario/{id}/funcionalidades',[AuthController::class,'usuFunc']);
 

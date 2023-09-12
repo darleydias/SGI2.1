@@ -109,6 +109,7 @@ class GrupoController extends Controller
                 'usuario'=>$user->name
             ];
         }
+        
         /**  LISTA GRUPOS DE UM USUARIO EM UM GRUPO **/
         public function listaGruposUsuario($id){
             try{
