@@ -16,6 +16,8 @@ return new class extends Migration
             $table->integer('setorExecutante_id')->unsigned();
             $table->integer('producao_id')->unsigned();
             $table->integer('pessoa_id')->unsigned();
+            $table->timestamp('dia')->nullable();
+            $table->integer('quant')->nullable();
             $table->timestamps();
         });
     }
