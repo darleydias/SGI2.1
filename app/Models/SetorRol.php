@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Setor extends Model
+class SetorRol extends Model
 {
     use HasFactory;
-    protected $table = 'setor';
+    protected $table = 'setor_rol';
     protected $fillable = ['nome','peso'];
 
     use SoftDeletes;
@@ -18,4 +18,8 @@ class Setor extends Model
     public function funcionarios(){
         return $this->hasMany(Pessoa::class);
     }
+    public function servicos(){
+        return $this->hasMany(ServicosRol::class);
+    }
+    
 }

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('setor', function (Blueprint $table) {
+        Schema::create('setor_rol', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nome', 100);
             $table->integer('peso')->nullable();
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('setor');
+        Schema::dropIfExists('setor_rol');
     }
 };
