@@ -17,7 +17,13 @@ class SetorExecutanteFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'id_setor'=>1,
+            'id_producao'=>1,
+            'dtInicio'=>$this->faker->date(),
+            'dtFim'=>$this->faker->date(),
+            'quantIni'=>$this->faker->randomNumber(4, false),
+            'quantAtual'=>$this->faker->randomNumber(4, false),
+            'faltam'=>$this->faker->randomNumber(4, false),
         ];
     }
 }

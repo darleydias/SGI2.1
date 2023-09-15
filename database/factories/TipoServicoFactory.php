@@ -17,7 +17,7 @@ class TipoServicoFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nome'=>$this->faker->words(2,true),
         ];
     }
 }

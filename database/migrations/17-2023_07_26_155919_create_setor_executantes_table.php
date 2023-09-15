@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamps();
             
             $table->foreign('id_producao')->references('id')->on('producao');
-            $table->foreign('id_setor')->references('id')->on('setor_rol');
+            $table->foreign('id_setor')->references('id')->on('setor');
 
   
         });

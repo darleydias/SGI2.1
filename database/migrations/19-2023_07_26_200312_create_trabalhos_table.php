@@ -21,7 +21,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->foreign('id_servico')->references('id')->on('servico');
+            $table->foreign('id_servico')->references('id')->on('servico_executado');
             $table->foreign('id_executor')->references('id')->on('pessoa');
         });
     }

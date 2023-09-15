@@ -16,8 +16,8 @@ class FuncionalidadeFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            //
-        ];
+        return 
+            ['nome'=>$this->faker->words(3,true),'URL'=>$this->faker->url('http'),'menu'=>1,'sistema_id'=>1]
+        ;
     }
 }

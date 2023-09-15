@@ -16,8 +16,6 @@ class GrupoFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            //
-        ];
+        return ['nome'=>$this->faker->words(2,true)];
     }
 }

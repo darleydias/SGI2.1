@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('servico', function (Blueprint $table) {
+        Schema::create('servico_executado', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('id_produto')->unsigned();
             $table->integer('id_setorExecutante')->unsigned();
@@ -36,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('servico');
+        Schema::dropIfExists('servico_executado');
     }
 };

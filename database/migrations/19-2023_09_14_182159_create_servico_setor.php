@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('material_rol', function (Blueprint $table) {
+        Schema::create('servico_setor', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('cod')->nullable();
-            $table->string('desc')->nullable();
-            $table->integer('quant')->nullable();
-            $table->string('unid')->nullable();
-            $table->timestamps();
+            $table->integer('servico_id')->unsigned();
+            $table->integer('setor_id')->unsigned();
+
+            $table->foreign('servico_id')->references('id')->on('servico');
+            $table->foreign('setor_id')->references('id')->on('setor');
+
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('material_rol');
+        Schema::dropIfExists('servico_setor');
     }
 };

@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('material_rol_roteiro', function (Blueprint $table) {
+        Schema::create('material_roteiro', function (Blueprint $table) {
          $table->increments('id');
          $table->integer('roteiro_id')->unsigned();
          $table->integer('material_id')->unsigned();
 
          $table->foreign('roteiro_id')->references('id')->on('roteiro');
-         $table->foreign('material_id')->references('id')->on('material_rol');
+         $table->foreign('material_id')->references('id')->on('material');
 
          $table->timestamps(); 
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('material_rol_roteiro');
+        Schema::dropIfExists('material_roteiro');
     }
 };

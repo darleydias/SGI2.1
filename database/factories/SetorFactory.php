@@ -17,7 +17,8 @@ class SetorFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nome'=>$this->faker->words(2,true),
+            'peso'=>$this->faker->randomNumber(2, false)
         ];
     }
 }

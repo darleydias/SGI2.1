@@ -9,7 +9,7 @@ class Roteiro extends Model
 {
     use HasFactory;
     protected $table = 'roteiro';
-    protected $fillable = ['setor_id','material_id','servico_id','produto_id'];
+    protected $fillable = ['nome','produto_id'];
 
     use SoftDeletes;
     protected $dates = ['deleted_at'];
@@ -17,6 +17,9 @@ class Roteiro extends Model
    
     public function material(){ 
         return $this->belongsToMany(Material::class,'material_roteiro')->withTimestamps();;
+    }
+    public function setor(){ 
+        return $this->belongsToMany(Roteiro::class,'roteiro_setor')->withTimestamps();;
     }
     
 }

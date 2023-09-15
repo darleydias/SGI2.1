@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('servico_rol', function (Blueprint $table) {
+        Schema::create('servico', function (Blueprint $table) {
            $table->increments('id');
            $table->string('cod_operacao')->nullable();
            $table->string('cod_servico')->nullable();
@@ -21,7 +21,7 @@ return new class extends Migration
            $table->string('obs')->nullable();
            $table->integer('setor_id')->unsigned();
 
-           $table->foreign('setor_id')->references('id')->on('setor_rol');
+           $table->foreign('setor_id')->references('id')->on('setor');
            $table->timestamps();
         });
     }

@@ -17,7 +17,9 @@ class OmieFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'codigo'=>$this->faker->randomNumber(3, false),
+            'descricao'=>$this->faker->words(4,true),
+            'valor_unitario'=>$this->faker->randomFloat(2)
         ];
     }
 }

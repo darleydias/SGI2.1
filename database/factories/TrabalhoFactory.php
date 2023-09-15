@@ -16,8 +16,13 @@ class TrabalhoFactory extends Factory
      */
     public function definition(): array
     {
+     
         return [
-            //
+            'id_executor'=>1,
+            'id_servico'=>1,
+            'tempoInicio'=>$this->faker->date(),
+            'tempoFim'=>$this->faker->date(),
+            'trabalhoPausa'=>1,
         ];
     }
 }

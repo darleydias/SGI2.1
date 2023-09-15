@@ -17,7 +17,13 @@ class PessoaFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nomeCompleto'=>$this->faker->name,
+            'sexo'=>"m",
+            'dtNasc'=>$this->faker->date(),
+            'CPF'=>$this->faker->randomNumber(5, false),
+            'email'=>$this->faker->email,
+            'celular'=>$this->faker->phoneNumber(),
+            'id_setor'=>$this->faker->randomNumber(1, false)
         ];
     }
 }

@@ -21,4 +21,7 @@ class Servico extends Model
     public function setorExecutante(){
         return $this->hasMany(SetorExecutante::class);
     }
+    public function roteiro(){ 
+        return $this->belongsToMany(Material::class,'servico_setor')->withTimestamps();;
+    }
 }
