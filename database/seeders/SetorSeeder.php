@@ -20,7 +20,7 @@ class SetorSeeder extends Seeder
             array("Expedição", 10)
         );
         for($i=0;$i<6;$i++){
-            Setor::factory()->create([
+            Setor::create([
                 'nome' => $setores[$i][0],
                 'peso' => $setores[$i][1],
             ]);

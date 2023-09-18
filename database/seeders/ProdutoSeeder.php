@@ -14,15 +14,15 @@ class ProdutoSeeder extends Seeder
     public function run(): void
     {
         static $produtos = array(
-            array("Case M4","Case M4", "C10dd",1,230),
+            array("Case M4","Case M4","C10dd",1,230),
             array("Suporte articulado","Suporte articulado", "S10dd",2,730),
-            array("Base x","Base x", "10dd",2,230),
+            array("Base x","Base x","10dd",2,230),
             array("Carregador x","Carregador x", "CR10dd",3,120),
             array("Hub x","Hub x", "H10dd",1,67),
             array("Multicharger","Multicharger", "M10dd",1,45)
         );
-        for($i=0;$i<4;$i++){
-            Produto::factory()->create([
+        for($i=0;$i<count($produtos);$i++){
+            Produto::create([
                 'nome' => $produtos[$i][0],
                 'desc' => $produtos[$i][1],
                 'cod' => $produtos[$i][2],

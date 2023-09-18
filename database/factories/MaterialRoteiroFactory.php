@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Seguimento>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
  */
-class SeguimentoFactory extends Factory
+class MaterialRoteiroFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,8 @@ class SeguimentoFactory extends Factory
     public function definition(): array
     {
         return [
-            'nome'=>$this->faker->words(3,true)
+            'roteiro_id'=>$this->faker->numberBetween(1,6),
+            'material_id'=>$this->faker->numberBetween(1,6)
         ];
     }
 }

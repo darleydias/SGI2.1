@@ -18,6 +18,10 @@ return new class extends Migration
             $table->foreign('roteiro_id')->references('id')->on('roteiro');
             $table->foreign('setor_id')->references('id')->on('setor');
 
+
+            $table->softDeletes();
+            
+
         });
     }
 

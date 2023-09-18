@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('desc')->nullable();
             $table->integer('quant')->nullable();
             $table->string('unid')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

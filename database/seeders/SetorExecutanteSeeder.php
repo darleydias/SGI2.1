@@ -40,7 +40,7 @@ class SetorExecutanteSeeder extends Seeder
             array(6,4, "2023-08-22","2023-08-25",3000,0),
         );
         for($i=0;$i<24;$i++){
-            SetorExecutante::factory()->create([
+            SetorExecutante::create([
                 'id_setor' => $setorExecutante[$i][0],
                 'id_producao' => $setorExecutante[$i][1],
                 'dtInicio' => $setorExecutante[$i][2],
