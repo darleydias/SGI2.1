@@ -15,7 +15,10 @@ class SetorExecutante extends Model
         return $this->belongsTo(Setor::class);
     }
     public function producao(){
-        return $this->hasMany(Producao::class);
+        return $this->belongsTo(Producao::class);
+    }
+    public function servicos(){
+        return $this->hasMany(ServicoExecutado::class);
     }
 
 }

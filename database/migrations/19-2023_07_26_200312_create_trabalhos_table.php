@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('trabalho', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('id_executor')->unsigned();
-            $table->integer('id_servico')->unsigned();
+            $table->integer('id_servicoExecutado')->unsigned();
             $table->integer('trabalhoPausa');
             $table->timestamp('tempoInicio')->nullable();
             $table->timestamp('tempoFim')->nullable();
             $table->softDeletes();
             $table->timestamps();
 
-            $table->foreign('id_servico')->references('id')->on('servico_executado');
+            $table->foreign('id_servicoExecutado')->references('id')->on('servicoExecutado');
             $table->foreign('id_executor')->references('id')->on('pessoa');
         });
     }

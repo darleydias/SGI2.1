@@ -10,7 +10,7 @@ class Trabalho extends Model
 {
     use HasFactory;
     protected $table = 'trabalho';
-    protected $fillable = ['id_executor','id_servico','tempoInicio','tempoFim','trabalhoPausa'];
+    protected $fillable = ['id_executor','id_servicoExecutado','tempoInicio','tempoFim','trabalhoPausa'];
 
     use SoftDeletes;
     protected $dates = ['deleted_at'];
