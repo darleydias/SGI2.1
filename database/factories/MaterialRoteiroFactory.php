@@ -17,8 +17,8 @@ class MaterialRoteiroFactory extends Factory
     public function definition(): array
     {
         return [
-            'roteiro_id'=>$this->faker->numberBetween(1,6),
-            'material_id'=>$this->faker->numberBetween(1,6)
+            'roteiro_id'=>$this->faker->numberBetween(1,2),
+            'material_id'=>$this->faker->numberBetween(1,2)
         ];
     }
 }

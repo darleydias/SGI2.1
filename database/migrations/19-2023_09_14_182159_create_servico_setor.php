@@ -18,6 +18,7 @@ return new class extends Migration
 
             $table->foreign('servico_id')->references('id')->on('servico');
             $table->foreign('setor_id')->references('id')->on('setor');
+            $table->timestamps();
 
         });
     }

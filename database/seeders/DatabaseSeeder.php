@@ -26,11 +26,13 @@ class DatabaseSeeder extends Seeder
         // \App\Models\TipoServico::factory(10)->create();
         $this->call([SetorSeeder::class]);
         $this->call([SetorExecutanteSeeder::class]);
-        //$this->call([ServicoSeeder::class]);
+        $this->call([ServicoSeeder::class]);
         //\App\Models\Trabalho::factory(10)->create();
         $this->call([MaterialSeeder::class]);
         $this->call([RoteiroSeeder::class]);
         \App\Models\MaterialRoteiro::factory(10)->create();
+        $this->call([ServicoSetorSeeder::class]);
+        $this->call([RoteiroSetorSeeder::class]);
 
     }
 }

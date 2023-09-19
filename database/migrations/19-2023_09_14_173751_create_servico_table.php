@@ -19,9 +19,7 @@ return new class extends Migration
            $table->integer('predecessor')->nullable();
            $table->string('especificacoes')->nullable();
            $table->string('obs')->nullable();
-           $table->integer('setor_id')->unsigned();
 
-           $table->foreign('setor_id')->references('id')->on('setor');
            $table->timestamps();
         });
     }

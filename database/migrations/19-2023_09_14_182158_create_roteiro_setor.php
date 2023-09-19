@@ -15,12 +15,12 @@ return new class extends Migration
             $table->increments('id');
             $table->integer('roteiro_id')->unsigned();
             $table->integer('setor_id')->unsigned();
+            
             $table->foreign('roteiro_id')->references('id')->on('roteiro');
             $table->foreign('setor_id')->references('id')->on('setor');
 
-
+            $table->timestamps();
             $table->softDeletes();
-            
 
         });
     }

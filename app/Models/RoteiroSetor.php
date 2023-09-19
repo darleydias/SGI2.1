@@ -5,10 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MaterialRoteiro extends Model
+class RoteiroSetor extends Model
 {
     use HasFactory;
-    protected $table = 'material_roteiro';
-    protected $fillable = ['roteiro_id','material_id'];
-    
+    protected $table = 'roteiro_setor';
+    protected $fillable = ['roteiro_id','setor_id'];
 }
