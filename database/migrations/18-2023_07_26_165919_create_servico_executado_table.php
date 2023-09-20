@@ -19,7 +19,8 @@ return new class extends Migration
             $table->integer('id_tipoServico')->unsigned();
             $table->timestamp('dtInicio')->nullable();
             $table->timestamp('dtFim')->nullable();
-            $table->integer('quantFim')->nullable();
+            $table->integer('quantIni')->nullable();
+            $table->integer('quantConcluido')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

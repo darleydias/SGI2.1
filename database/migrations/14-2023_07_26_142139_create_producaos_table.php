@@ -21,6 +21,7 @@ return new class extends Migration
             $table->timestamp('dataPrevista')->nullable();
             $table->timestamp('dataEntrega')->nullable();
             $table->text('obs')->nullable();
+            
             $table->softDeletes();
             $table->timestamps();
 

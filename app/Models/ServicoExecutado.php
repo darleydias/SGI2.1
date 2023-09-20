@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Servico extends Model
+class ServicoExecutado extends Model
 {
     use HasFactory;
     protected $table = 'servicoExecutado';

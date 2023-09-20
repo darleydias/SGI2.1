@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\MaterialRoteiro::factory(10)->create();
         $this->call([ServicoSetorSeeder::class]);
         $this->call([RoteiroSetorSeeder::class]);
+        $this->call([ServicoExecutadoSeeder::class]);
 
     }
 }
