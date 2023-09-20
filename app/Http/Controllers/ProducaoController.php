@@ -284,6 +284,15 @@ class ProducaoController extends Controller
             ->groupBy('prod')->get()->all();
             return $producao;
     }
+    public function listaContainers($id){
+        $producao = SetorExecutante::leftJoin('setor', 'setor.id', '=', 'setor_executante.id_setor')
+        ->leftJoin('producao','producao.id','=','setor_executante.id_producao')
+        ->where('producao.id',$id)
+        ->select('setor.nome')->get()->all();
+
+        return $producao;
+
+    }
 
 
 }
