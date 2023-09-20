@@ -289,9 +289,7 @@ class ProducaoController extends Controller
         ->leftJoin('producao','producao.id','=','setor_executante.id_producao')
         ->where('producao.id',$id)
         ->select('setor.nome')->get()->all();
-
         return $producao;
-
     }
 
 
