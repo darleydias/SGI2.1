@@ -13,12 +13,15 @@ return new class extends Migration
     {
         Schema::create('servico', function (Blueprint $table) {
            $table->increments('id');
+           $table->integer('tipoServico_id')->unsigned();
            $table->string('cod_operacao')->nullable();
            $table->string('cod_servico')->nullable();
            $table->string('desc')->nullable();
            $table->integer('predecessor')->nullable();
            $table->string('especificacoes')->nullable();
            $table->string('obs')->nullable();
+
+           $table->foreign('tipoServico_id')->references('id')->on('tipo_servico');
 
            $table->timestamps();
         });

@@ -16,6 +16,9 @@ class Material extends Model
     protected $dates = ['deleted_at'];
 
     public function roteiro(){ 
-        return $this->belongsToMany(Material::class,'material_roteiro')->withTimestamps();;
+        return $this->belongsToMany(Roteiro::class,'roteiro')->withTimestamps();;
+    }
+    public function materialGasto(){ 
+        return $this->hasMany(MaterialGasto::class,'material_gasto')->withTimestamps();;
     }
 }

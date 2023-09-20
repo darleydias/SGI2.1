@@ -18,5 +18,8 @@ class Producao extends Model
     public function sistema(){
         return $this->belongsTo(Produto::class);
     }
+    public function container(){
+        return $this->hasMany(PainelContainer::class);
+    }
     
 }

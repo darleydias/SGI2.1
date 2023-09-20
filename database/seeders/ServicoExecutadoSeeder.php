@@ -13,24 +13,24 @@ class ServicoExecutadoSeeder extends Seeder
     {
         static $servicoExecutado = array(
             
-            array(1,1,1,1,"2023-09-01 10:00:00","2023-09-01 10:00:00",4000,239),
-            array(1,2,1,1,"2023-09-01 10:00:00","2023-09-12 10:00:00",4000,239),
-            array(1,3,1,1,"2023-09-01 10:00:00","2023-09-13 10:00:00",4000,239),
-            array(1,4,1,1,"2023-09-01 10:00:00","2023-09-15 10:00:00",4000,239),
-            array(1,1,1,1,"2023-09-01 10:00:00","2023-09-17 10:00:00",4000,239),
-            array(1,1,1,1,"2023-09-01 10:00:00","2023-09-23 10:00:00",4000,239),
-            array(1,1,1,1,"2023-09-01 10:00:00","2023-09-26 10:00:00",4000,239)
+            array(1,1,1,"2023-09-01 10:00:00","2023-09-01 10:00:00",4000,239),
+            array(2,1,2,"2023-09-01 10:00:00","2023-09-12 10:00:00",4000,239),
+            array(3,1,3,"2023-09-01 10:00:00","2023-09-13 10:00:00",4000,239),
+            array(4,1,4,"2023-09-01 10:00:00","2023-09-15 10:00:00",4000,239),
+            array(1,1,2,"2023-09-01 10:00:00","2023-09-17 10:00:00",4000,239),
+            array(1,1,5,"2023-09-01 10:00:00","2023-09-23 10:00:00",4000,239),
+            array(1,1,6,"2023-09-01 10:00:00","2023-09-26 10:00:00",4000,239)
         );
         for($i=0;$i<count($servicoExecutado);$i++){
             ServicoExecutado::create([
-                'id_produto' => $servicoExecutado[$i][0],
-                'id_setorExecutante' => $servicoExecutado[$i][1],
-                'id_responsavel' => $servicoExecutado[$i][2],
-                'id_tipoServico' => $servicoExecutado[$i][3],
-                'dtInicio' => $servicoExecutado[$i][4],
-                'dtFim' => $servicoExecutado[$i][5],
-                'quantIni' => $servicoExecutado[$i][6],
-                'quantConcluido' => $servicoExecutado[$i][7]
+
+                'id_setorExecutante' => $servicoExecutado[$i][0],
+                'id_responsavel' => $servicoExecutado[$i][1],
+                'id_servico' => $servicoExecutado[$i][2],
+                'dtInicio' => $servicoExecutado[$i][3],
+                'dtFim' => $servicoExecutado[$i][4],
+                'quantIni' => $servicoExecutado[$i][5],
+                'quantConcluido' => $servicoExecutado[$i][6]
 
             ]);
         }
