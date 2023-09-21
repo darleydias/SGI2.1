@@ -152,9 +152,11 @@ Route::delete('/usuario/grupo',[GrupoController::class,'excluiUsuarioGrupo']);/*
  Route::put('/producao/{id}',[ProducaoController::class,'update']);
  Route::delete('/producao/{id}',[ProducaoController::class,'destroy']);
  Route::post('/prod/filtros',[ProducaoController::class,'filtrar']);
+ Route::post('/prod/painel/desempenho',[ProducaoController::class,'percentualExecucaoSecao']);
  Route::get('/producao/desempenho/{id}',[ProducaoController::class,'desempenho']);
  Route::get('/prod/desempenho/',[ProducaoController::class,'desempenhoTodos']);
  Route::get('/prod/{id}/setores',[ProducaoController::class,'listaContainers']);
+ Route::get('/prod/{id}/percent',[ProducaoController::class,'percentualExecucao']);
  
 #####
 

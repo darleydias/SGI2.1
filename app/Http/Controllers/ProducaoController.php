@@ -8,6 +8,9 @@ use App\Models\Producao;
 use App\Models\Produto;
 use App\Models\Cliente;
 use App\Models\SetorExecutante;
+use App\Models\ProdutoServico;
+
+
 
 class ProducaoController extends Controller
 {
@@ -291,6 +294,54 @@ class ProducaoController extends Controller
         ->select('setor.nome')->get()->all();
         return $producao;
     }
+    public function percentualExecucao($idProducao){
 
+        $producao = Producao::findOrFail($idProducao);
+        $idProduto = $producao->produto_id;
 
+        // Soma todos os servicos previstos para um produto segundo o roteiro e calcula o percentual de todo servicos feitos em uma producao        
+
+        // QUANTIDADE PREVISTA
+        $produtoServico = ProdutoServico::select(ProdutoServico::raw("SUM(produto_servico.quant) as total"))
+        ->where('produto_servico.produto_id',$idProduto)->value('total');
+        if($produtoServico<1){
+            return ['msg'=>'não há previsão de servico cadastrada para este produto'];
+
+        }
+        // QUANTIDADE EXCUTADA
+        $setorExecutante = SetorExecutante::select(SetorExecutante::raw("SUM(servicoExecutado.quantConcluido) as total"))
+        ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
+        ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
+        // ->where('producao.id',$id)->toSql();
+        ->where('producao.id',$idProducao)->value('total');
+        
+        $percentual = ((int) $setorExecutante * 100)/(int) $produtoServico;
+
+        return $percentual;
+    }
+
+    public function percentualExecucaoSecao(Request $request){
+        $idProducao=$request->idProducao;
+        $idSetor=$request->idSetor;
+        // devolve a Soma todos os servicos previstos segundo o roteiro e calcula 
+        // o percentual de todo servicos feitos em uma dada seção        
+        $producao = Producao::findOrFail($idProducao);
+        $idProduto = $producao->produto_id;
+        
+        // QUANTIDADE PREVISTA
+        $produtoServico = ProdutoServico::select(ProdutoServico::raw("SUM(produto_servico.quant) as total"))
+        ->where('produto_servico.setor_id',$idSetor)
+        ->where('produto_servico.produto_id',$idProduto)->value('total');
+
+        // // QUANTIDADE EXCUTADA
+        $setorExecutante = SetorExecutante::select(SetorExecutante::raw("SUM(servicoExecutado.quantConcluido) as total"))
+        ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
+        ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
+        ->where('setor_executante.id',$idSetor)
+        ->where('producao.id',$idProducao)->value('total');
+        
+       $percentual = ((int) $setorExecutante * 100)/(int) $produtoServico;
+
+        return $percentual;
+    }
 }
