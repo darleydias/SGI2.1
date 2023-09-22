@@ -291,7 +291,7 @@ class ProducaoController extends Controller
         $producao = SetorExecutante::leftJoin('setor', 'setor.id', '=', 'setor_executante.id_setor')
         ->leftJoin('producao','producao.id','=','setor_executante.id_producao')
         ->where('producao.id',$id)
-        ->select('setor.nome')->get()->all();
+        ->select('setor.nome','setor.id')->get()->all();
         return $producao;
     }
     public function percentualExecucao($idProducao){
@@ -320,11 +320,11 @@ class ProducaoController extends Controller
         return $percentual;
     }
 
-    public function percentualExecucaoSecao(Request $request){
+    public function estatisticasSetor(Request $request){
         $idProducao=$request->idProducao;
         $idSetor=$request->idSetor;
         // devolve a Soma todos os servicos previstos segundo o roteiro e calcula 
-        // o percentual de todo servicos feitos em uma dada seção        
+        // o percentual de todo servicos feitos em uma cada seção        
         $producao = Producao::findOrFail($idProducao);
         $idProduto = $producao->produto_id;
         
@@ -339,9 +339,28 @@ class ProducaoController extends Controller
         ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
         ->where('setor_executante.id',$idSetor)
         ->where('producao.id',$idProducao)->value('total');
+        //->where('producao.id',$idProducao)->toSql();
+
+        // // TEMPO GASTO POR SETOR
+        $setorExecutante = SetorExecutante::select(SetorExecutante::raw("SUM(servicoExecutado.quantConcluido)as total ,servicoExecutado.dtInicio "))
+        ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
+        ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
+        ->where('setor_executante.id',$idSetor)
+        // ->where('producao.id',$idProducao)->value('total');
+        ->where('producao.id',$idProducao)->toSql();
+
+
+
+
+
+
+
+        if($setorExecutante===null){$setorExecutante=0;};
         
        $percentual = ((int) $setorExecutante * 100)/(int) $produtoServico;
 
-        return $percentual;
+       $saida = ['svPrevistos'=>$produtoServico,'svExecutados'=>$setorExecutante,'percentual'=>$percentual,'setor'=>$idSetor];
+
+       return $setorExecutante ;
     }
 }
