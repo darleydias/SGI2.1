@@ -17,10 +17,9 @@ return new class extends Migration
            $table->integer('servico_id')->unsigned();
            $table->integer('setor_id')->unsigned();
            $table->integer('quant')->nullable();
-
+           $table->integer('tempoMedioMin')->nullable();
            $table->foreign('servico_id')->references('id')->on('servico');
            $table->foreign('produto_id')->references('id')->on('produto');
-
            $table->timestamps();
         });
     }

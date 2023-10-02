@@ -9,6 +9,7 @@ use App\Models\Produto;
 use App\Models\Cliente;
 use App\Models\SetorExecutante;
 use App\Models\ProdutoServico;
+use App\Models\ServicoExecutado;
 
 
 
@@ -265,7 +266,6 @@ class ProducaoController extends Controller
     public function desempenho(string $id)
     {
         try{
-
             $producao = SetorExecutante::leftJoin('setor', 'setor.id', '=', 'setor_executante.id_setor')
             ->leftJoin('producao','producao.id','=','setor_executante.id_producao')
             ->where('producao.id',$id)
@@ -294,6 +294,7 @@ class ProducaoController extends Controller
         ->select('setor.nome','setor.id')->get()->all();
         return $producao;
     }
+
     public function percentualExecucao($idProducao){
 
         $producao = Producao::findOrFail($idProducao);
@@ -301,23 +302,79 @@ class ProducaoController extends Controller
 
         // Soma todos os servicos previstos para um produto segundo o roteiro e calcula o percentual de todo servicos feitos em uma producao        
 
-        // QUANTIDADE PREVISTA
-        $produtoServico = ProdutoServico::select(ProdutoServico::raw("SUM(produto_servico.quant) as total"))
+        // SOMA DE HORAS DE TODOS SERVICOS * PREVISTOS * PARA UMA PRODUÇÃO ESPECÍFICA
+  
+        $horasPrevistas = ProdutoServico::select(ProdutoServico::raw("SUM((produto_servico.quant * produto_servico.tempoMedioMin)/60) as total"))
         ->where('produto_servico.produto_id',$idProduto)->value('total');
-        if($produtoServico<1){
-            return ['msg'=>'não há previsão de servico cadastrada para este produto'];
 
-        }
-        // QUANTIDADE EXCUTADA
-        $setorExecutante = SetorExecutante::select(SetorExecutante::raw("SUM(servicoExecutado.quantConcluido) as total"))
+     
+
+        // SOMA DA QUANTIDADE DE SERVICOS * EXECUTADOS *
+
+        $somaServicosFeitos = SetorExecutante::select(SetorExecutante::raw("SUM(servicoExecutado.quantConcluido) as total"))
         ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
         ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
-        // ->where('producao.id',$id)->toSql();
         ->where('producao.id',$idProducao)->value('total');
-        
-        $percentual = ((int) $setorExecutante * 100)/(int) $produtoServico;
 
-        return $percentual;
+
+         // SOMA DE HORAS DE TODOS SERVICOS * EXCUTADOS * PARA UMA PRODUÇÃO ESPECÍFICA
+  
+         $somaHorasTrabalhadas = SetorExecutante::select(SetorExecutante::raw("SUM((TIMESTAMPDIFF(MINUTE,servicoExecutado.dtInicio,servicoExecutado.dtFim))/60) as soma"))
+         ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
+         ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
+         ->where('producao.id',$idProducao)->value('soma');
+
+        // QUANTOS SERVICOS POR HORA ESTÃO SENDO FEITO DESDE O INÍCIO DA PRODUÇAO
+
+        if(empty($somaHorasTrabalhadas)){
+            return ['msg'=> 'Não foram lancados apontamentos'];
+        }else{
+            $servicoHora = $somaServicosFeitos/$somaHorasTrabalhadas;
+        }
+        
+        // PERCENTUAL DE HORAS EXECUTADAS EM RELAÇÃO AS PREVISTAS
+
+        if(empty($horasPrevistas)){
+            return ['msg'=>'Não foram cadastrados servicos para o produto'];
+        }else{
+            $percentual = ($somaHorasTrabalhadas * 100)/(int) $horasPrevistas;
+        }
+        
+        $saida = ['percentualHorasGastas'=>round($percentual,2),'svPorHora'=>round($servicoHora,2),'horasPrevistasProd'=>$horasPrevistas,'somaServicosFeitos'=>$somaServicosFeitos,'somaHorasTrabalhadas'=>$somaHorasTrabalhadas];
+        return $saida;
+    }
+
+    public function mediaTempoServico(Request $request){
+
+        // ROTINA DE ATUALIZAÇÃO DE MEDIA DE TEMPO GASTO POR SERVICO QUE ESTÁ REGISTRADA NA TABELA PRODUTO_SERVICO. 
+        // SERÁ NECESSÁRIO DEPOIS DE IDENTIFICADO, UMA LINHA DE CORTE PARA EVITRA QUE UM VALOR DISCREPANTE REGISTRADO POR ERRO MUDE A MÉDIA GERAL 
+        
+        $horasTrabalhadas = SetorExecutante::select(SetorExecutante::raw("AVG((TIMESTAMPDIFF(MINUTE,servicoExecutado.dtInicio,servicoExecutado.dtFim))/60) as media,servico.desc,servicoExecutado.id_servico as sv"))
+        ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
+        ->leftjoin('servico','servico.id','=','servicoExecutado.id_servico')
+        ->where('setor_executante.id',$request->idSetor)
+        ->groupBy('servicoExecutado.id_servico','servico.desc')->get()->all();
+
+        for($i=0;$i<count($horasTrabalhadas);$i++){
+                ProdutoServico::where('servico_id', $horasTrabalhadas[$i]->sv)
+                ->update(['tempoMedioMin' => $horasTrabalhadas[$i]->media]);
+        }
+        return ['msg'=>count($horasTrabalhadas).' itens atualizados'];
+    }
+
+
+
+    public function estatisticasOp(Request $request){
+        $idProducao=$request->idProducao;
+        // // QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS POR SETOR, DESDE O INÍCIO DA PRODUCAO - INDICADOR PRODUÇÃO
+        $now = date('Y/m/d H:i:s', time());
+        $indicadorProducao = SetorExecutante::select(SetorExecutante::raw("avg((servicoExecutado.quantConcluido)/(TIMESTAMPDIFF(DAY,producao.dataInicio,'".$now."'))) as total,setor.nome")) //MEDIA DA QUANTIDADE DE SERVICO
+        ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
+        ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
+        ->leftjoin('setor', 'setor.id', '=', 'setor_executante.id_setor')
+        ->where('producao.id',$idProducao)
+        ->groupBy('setor.nome')->get()->all();
+        return $indicadorProducao;
     }
 
     public function estatisticasSetor(Request $request){
@@ -328,12 +385,12 @@ class ProducaoController extends Controller
         $producao = Producao::findOrFail($idProducao);
         $idProduto = $producao->produto_id;
         
-        // QUANTIDADE PREVISTA
+        // QUANTIDADE DE SERVICOS PREVISTA POR SETOR
         $produtoServico = ProdutoServico::select(ProdutoServico::raw("SUM(produto_servico.quant) as total"))
         ->where('produto_servico.setor_id',$idSetor)
         ->where('produto_servico.produto_id',$idProduto)->value('total');
 
-        // // QUANTIDADE EXCUTADA
+        // // QUANTIDADE DE SERVICOS  EXCUTADOS POR SETOR
         $setorExecutante = SetorExecutante::select(SetorExecutante::raw("SUM(servicoExecutado.quantConcluido) as total"))
         ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
         ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
@@ -341,26 +398,40 @@ class ProducaoController extends Controller
         ->where('producao.id',$idProducao)->value('total');
         //->where('producao.id',$idProducao)->toSql();
 
-        // // TEMPO GASTO POR SETOR
-        $setorExecutante = SetorExecutante::select(SetorExecutante::raw("SUM(servicoExecutado.quantConcluido)as total ,servicoExecutado.dtInicio "))
+
+        // // QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS POR SETOR, DESDE O INÍCIO DA PRODUCAO - INDICADOR PRODUÇÃO
+        $now = date('Y/m/d H:i:s', time());
+        $indicadorProducao = SetorExecutante::select(SetorExecutante::raw("avg((servicoExecutado.quantConcluido)/(TIMESTAMPDIFF(DAY,producao.dataInicio,'".$now."'))) as total")) //MEDIA DA QUANTIDADE DE SERVICO
         ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
         ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
         ->where('setor_executante.id',$idSetor)
-        // ->where('producao.id',$idProducao)->value('total');
-        ->where('producao.id',$idProducao)->toSql();
+        ->where('producao.id',$idProducao)->value('total');
+
+
+        //->where('producao.id',$idProducao)->toSql();
 
 
 
+        // // TEMPO GASTO POR SETOR
 
+        $horasTrabalhadas = SetorExecutante::select(SetorExecutante::raw("SUM((TIMESTAMPDIFF(MINUTE,servicoExecutado.dtInicio,servicoExecutado.dtFim))/60) as total"))
+        ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
+        ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
+        ->where('setor_executante.id',$idSetor)
+        ->where('producao.id',$idProducao)->value('total');
+        // ->where('producao.id',$idProducao)->toSql();
+                
+        // TEMPO PREVISTO(BASEADO NA SÉRIE HISTÓRICA) POR SERVICO-SETOR
 
+        $horasPrevistas = ProdutoServico::select(ProdutoServico::raw("SUM((produto_servico.quant * produto_servico.tempoMedioMin)/60) as total"))
+        ->where('produto_servico.setor_id',$idSetor)
+        ->where('produto_servico.produto_id',$idProduto)->value('total');
+        //->where('produto_servico.produto_id',$idProduto)->toSql();
 
+       if($setorExecutante===null){$setorExecutante=0;};
+       $percentual = 100;//((int) $setorExecutante * 100)/(int) $produtoServico;
+       $saida = ['svPrevistos'=>$produtoServico,'svExecutados'=>$setorExecutante,'percentual'=>$percentual,'setor'=>$idSetor,'horasTrab'=>ROUND($horasTrabalhadas,2),'horasPrevistas'=>ROUND($horasPrevistas,2),'indicadorProducao'=>round($indicadorProducao,2)];
 
-        if($setorExecutante===null){$setorExecutante=0;};
-        
-       $percentual = ((int) $setorExecutante * 100)/(int) $produtoServico;
-
-       $saida = ['svPrevistos'=>$produtoServico,'svExecutados'=>$setorExecutante,'percentual'=>$percentual,'setor'=>$idSetor];
-
-       return $setorExecutante ;
+       return $saida ;
     }
 }

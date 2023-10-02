@@ -157,6 +157,10 @@ Route::delete('/usuario/grupo',[GrupoController::class,'excluiUsuarioGrupo']);/*
  Route::get('/prod/desempenho/',[ProducaoController::class,'desempenhoTodos']);
  Route::get('/prod/{id}/setores',[ProducaoController::class,'listaContainers']);
  Route::get('/prod/{id}/percent',[ProducaoController::class,'percentualExecucao']);
+ Route::post('/prod/estatistica/media-tempo-servico',[ProducaoController::class,'mediaTempoServico']);
+ Route::post('/prod/estatistica/indicadores',[ProducaoController::class,'estatisticasOp']);
+ 
+ 
  
 #####
 
