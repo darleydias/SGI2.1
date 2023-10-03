@@ -15,6 +15,8 @@ use App\Http\Controllers\TipoServicoController;
 use App\Http\Controllers\TrabalhoController;
 use App\Http\Controllers\NotaFiscalController;
 use App\Http\Controllers\SetorExecutanteController;
+use App\Http\Controllers\IndicadorController;
+use App\Http\Controllers\MetaController;
 
 
 
@@ -120,6 +122,26 @@ Route::delete('/usuario/grupo',[GrupoController::class,'excluiUsuarioGrupo']);/*
  });
 #####
 
+######### INDICADOR
+
+Route::get('/indicador',[IndicadorController::class,'index']);
+Route::post('/indicador',[IndicadorController::class,'store']);
+Route::get('/indicador/{id}',[IndicadorController::class,'show']);
+Route::put('/indicador/{id}',[IndicadorController::class,'update']);
+Route::delete('/indicador/{id}',[IndicadorController::class,'destroy']);
+
+###################
+
+######### META
+
+Route::get('/meta',[MetaController::class,'index']);
+Route::post('/meta',[MetaController::class,'store']);
+Route::get('/meta/{id}',[MetaController::class,'show']);
+Route::put('/meta/{id}',[MetaController::class,'update']);
+Route::delete('/meta/{id}',[MetaController::class,'destroy']);
+
+###################
+
 ##### SEGUIMENTO #####
  Route::get('/seguimento',[SeguimentoController::class,'index']);
  Route::post('/seguimento',[SeguimentoController::class,'store']);
@@ -159,8 +181,7 @@ Route::delete('/usuario/grupo',[GrupoController::class,'excluiUsuarioGrupo']);/*
  Route::get('/prod/{id}/percent',[ProducaoController::class,'percentualExecucao']);
  Route::post('/prod/estatistica/media-tempo-servico',[ProducaoController::class,'mediaTempoServico']);
  Route::post('/prod/estatistica/indicadores',[ProducaoController::class,'estatisticasOp']);
- 
- 
+
  
 #####
 

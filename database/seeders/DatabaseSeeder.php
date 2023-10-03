@@ -36,5 +36,7 @@ class DatabaseSeeder extends Seeder
         $this->call([TrabalhoSeeder::class]);
         $this->call([MaterialGastoSeeder::class]);
         $this->call([ProdutoServicoSeeder::class]);
+        $this->call([IndicadorSeeder::class]);
+        $this->call([MetaSeeder::class]);
     }
 }

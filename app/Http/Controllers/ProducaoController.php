@@ -10,6 +10,7 @@ use App\Models\Cliente;
 use App\Models\SetorExecutante;
 use App\Models\ProdutoServico;
 use App\Models\ServicoExecutado;
+use App\Models\Meta;
 
 
 
@@ -362,22 +363,49 @@ class ProducaoController extends Controller
         return ['msg'=>count($horasTrabalhadas).' itens atualizados'];
     }
 
+ 
 
 
+
+    // ********************   INDICADORES GERAIS************************
+   
     public function estatisticasOp(Request $request){
         $idProducao=$request->idProducao;
-        // // QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS POR SETOR, DESDE O INÍCIO DA PRODUCAO - INDICADOR PRODUÇÃO
-        $now = date('Y/m/d H:i:s', time());
-        $indicadorProducao = SetorExecutante::select(SetorExecutante::raw("avg((servicoExecutado.quantConcluido)/(TIMESTAMPDIFF(DAY,producao.dataInicio,'".$now."'))) as total,setor.nome")) //MEDIA DA QUANTIDADE DE SERVICO
+
+   // QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS GERAL(SOMA DE TODOS SETORES), DESDE O INÍCIO DA PRODUCAO - INDICADOR PRODUÇÃO
+
+         $now = date('Y/m/d H:i:s', time());
+         //MEDIA DA QUANTIDADE DE SERVICO POR DIA
+         $indProducaoTotal = SetorExecutante::select(SetorExecutante::raw("avg((servicoExecutado.quantConcluido)/(TIMESTAMPDIFF(DAY,producao.dataInicio,'".$now."'))) as total")) 
+         ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
+         ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
+         ->leftjoin('setor', 'setor.id', '=', 'setor_executante.id_setor')
+         ->leftjoin('meta','meta.setor_id','=','setor.id')
+         ->where('producao.id',$idProducao)->value('total');
+
+         $metaGeral = Meta::select('meta.valor as meta')
+         ->where('meta.indicador_id',1)
+         ->where('meta.setor_id',0)->value('meta');
+
+
+
+
+    //    INDICADOR PRODUÇÃO POR SETOR
+    //    QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS * POR SETOR *, DESDE O INÍCIO DA PRODUCAO - 
+        $indProducaoSetor = SetorExecutante::select(SetorExecutante::raw("avg((servicoExecutado.quantConcluido)/(TIMESTAMPDIFF(DAY,producao.dataInicio,'".$now."'))) as total,setor.nome,meta.valor")) //MEDIA DA QUANTIDADE DE SERVICO
         ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
         ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
         ->leftjoin('setor', 'setor.id', '=', 'setor_executante.id_setor')
+        ->leftjoin('meta','meta.setor_id','=','setor.id')
         ->where('producao.id',$idProducao)
-        ->groupBy('setor.nome')->get()->all();
-        return $indicadorProducao;
-    }
+        ->groupBy('setor.nome','meta.valor')->get()->all();
 
+          return ['indicadorProdSetor'=>$indProducaoSetor,'indicadorProdGeral'=>ROUND($indProducaoTotal,2),'metaGeralProd'=>$metaGeral];
+    }
+    // ********************   INDICADOR PRODUÇÃO ************************
+   
     public function estatisticasSetor(Request $request){
+
         $idProducao=$request->idProducao;
         $idSetor=$request->idSetor;
         // devolve a Soma todos os servicos previstos segundo o roteiro e calcula 
@@ -398,19 +426,15 @@ class ProducaoController extends Controller
         ->where('producao.id',$idProducao)->value('total');
         //->where('producao.id',$idProducao)->toSql();
 
-
-        // // QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS POR SETOR, DESDE O INÍCIO DA PRODUCAO - INDICADOR PRODUÇÃO
+       
         $now = date('Y/m/d H:i:s', time());
-        $indicadorProducao = SetorExecutante::select(SetorExecutante::raw("avg((servicoExecutado.quantConcluido)/(TIMESTAMPDIFF(DAY,producao.dataInicio,'".$now."'))) as total")) //MEDIA DA QUANTIDADE DE SERVICO
+        $indicadorProducao = SetorExecutante::select(SetorExecutante::raw("avg((servicoExecutado.quantConcluido)/(TIMESTAMPDIFF(DAY,producao.dataInicio,'".$now."'))) as total")) 
         ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
         ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
         ->where('setor_executante.id',$idSetor)
         ->where('producao.id',$idProducao)->value('total');
 
-
         //->where('producao.id',$idProducao)->toSql();
-
-
 
         // // TEMPO GASTO POR SETOR
 
