@@ -63,7 +63,19 @@ class ProducaoController extends Controller
             return ['msg'=>'Não foi possível encontrar produção '];
         }
     }
+ /**
+     * Display the specified resource.
+     */
+    public function showByOp(string $op)
+    {
+        try{
 
+           $op = Producao::all()->where('opNum',$op)->first();
+            return $op->id;
+        }catch(\Exception $e){
+            return ['msg'=>'Não foi possível encontrar produção '];
+        }
+    }
     /**
      * Update the specified resource in storage.
      */
@@ -341,7 +353,7 @@ class ProducaoController extends Controller
             $percentual = ($somaHorasTrabalhadas * 100)/(int) $horasPrevistas;
         }
         
-        $saida = ['percentualHorasGastas'=>round($percentual,2),'svPorHora'=>round($servicoHora,2),'horasPrevistasProd'=>$horasPrevistas,'somaServicosFeitos'=>$somaServicosFeitos,'somaHorasTrabalhadas'=>$somaHorasTrabalhadas];
+        $saida = ['percentualHorasGastas'=>round($percentual,0),'svPorHora'=>round($servicoHora,2),'horasPrevistasProd'=>$horasPrevistas,'somaServicosFeitos'=>$somaServicosFeitos,'somaHorasTrabalhadas'=>$somaHorasTrabalhadas];
         return $saida;
     }
 
@@ -366,7 +378,9 @@ class ProducaoController extends Controller
     // ********************   INDICADORES GERAIS************************
    
     public function estatisticasOp(Request $request){
+        
         $idProducao=$request->idProducao;
+
    // INDICADOR PRODUÇÃO
    // QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS GERAL(SOMA DE TODOS SETORES), DESDE O INÍCIO DA PRODUCAO - 
 

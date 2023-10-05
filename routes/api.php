@@ -181,6 +181,7 @@ Route::delete('/meta/{id}',[MetaController::class,'destroy']);
  Route::get('/prod/{id}/percent',[ProducaoController::class,'percentualExecucao']);
  Route::post('/prod/estatistica/media-tempo-servico',[ProducaoController::class,'mediaTempoServico']);
  Route::post('/prod/estatistica/indicadores',[ProducaoController::class,'estatisticasOp']);
+ Route::get('/prod/{op}',[ProducaoController::class,'showByOp']);
 
  
 #####
