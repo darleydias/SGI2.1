@@ -300,11 +300,12 @@ class ProducaoController extends Controller
             ->groupBy('prod')->get()->all();
             return $producao;
     }
+    // DEVOLVE DADOS DO SETOR QUE TRABALHOU EM UMA PRODUÇÃO, A PARTIR DO ID DA PRODUÇÃO  
     public function listaContainers($id){
         $producao = SetorExecutante::leftJoin('setor', 'setor.id', '=', 'setor_executante.id_setor')
         ->leftJoin('producao','producao.id','=','setor_executante.id_producao')
         ->where('producao.id',$id)
-        ->select('setor.nome','setor.id')->get()->all();
+        ->select('setor.nome','setor.id','setor_executante.dtInicio','setor_executante.dtFim')->get()->all();
         return $producao;
     }
 
@@ -460,8 +461,9 @@ class ProducaoController extends Controller
     }
     
     
-    //FIM INDICADORES GERAIS
+    //FIM INDICADORES GERAIS 
    
+    // DEVOLVE INFORMAÇÕES POR SETOR, PASSANDO O ID DO SETOR  
     public function estatisticasSetor(Request $request){
 
         $idProducao=$request->idProducao;
@@ -494,7 +496,7 @@ class ProducaoController extends Controller
 
         //->where('producao.id',$idProducao)->toSql();
 
-        // // TEMPO GASTO POR SETOR
+        // TEMPO GASTO POR SETOR CONSIDERANDO DATA DE INICIO E FIM NO SETOR
 
         $horasTrabalhadas = SetorExecutante::select(SetorExecutante::raw("SUM((TIMESTAMPDIFF(MINUTE,servicoExecutado.dtInicio,servicoExecutado.dtFim))/60) as total"))
         ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
