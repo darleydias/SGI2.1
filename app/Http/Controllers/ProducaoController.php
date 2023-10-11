@@ -300,6 +300,7 @@ class ProducaoController extends Controller
             ->groupBy('prod')->get()->all();
             return $producao;
     }
+    
     // DEVOLVE DADOS DO SETOR QUE TRABALHOU EM UMA PRODUÇÃO, A PARTIR DO ID DA PRODUÇÃO  
     public function listaContainers($id){
         $producao = SetorExecutante::leftJoin('setor', 'setor.id', '=', 'setor_executante.id_setor')
