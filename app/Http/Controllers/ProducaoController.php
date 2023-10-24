@@ -269,6 +269,7 @@ class ProducaoController extends Controller
     }
     public function desempenhoTodos()
     {
+         // OBSOLETO - não se registrará quantidade realizada por setor, por não existir
             $producao = SetorExecutante::leftJoin('setor', 'setor.id', '=', 'setor_executante.id_setor')
             ->leftJoin('producao','producao.id','=','setor_executante.id_producao')
             //somatorio de : execução percentual (quantidade atual x 100 /quant Total na OP) x peso. divido o resultado pela soma dos pesos
@@ -279,6 +280,7 @@ class ProducaoController extends Controller
     public function desempenho(string $id)
     {
         try{
+            // OBSOLETO - não se registrará quantidade realizada por setor, por não existir
             $producao = SetorExecutante::leftJoin('setor', 'setor.id', '=', 'setor_executante.id_setor')
             ->leftJoin('producao','producao.id','=','setor_executante.id_producao')
             ->where('producao.id',$id)
@@ -383,8 +385,8 @@ class ProducaoController extends Controller
         
         $idProducao=$request->idProducao;
 
-   // INDICADOR PRODUÇÃO
-   // QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS GERAL(SOMA DE TODOS SETORES), DESDE O INÍCIO DA PRODUCAO - 
+        // INDICADOR PRODUÇÃO
+        // QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS GERAL(SOMA DE TODOS SETORES), DESDE O INÍCIO DA PRODUCAO - 
 
          $now = date('Y/m/d H:i:s', time());
          //MEDIA DA QUANTIDADE DE SERVICO POR DIA
@@ -400,7 +402,7 @@ class ProducaoController extends Controller
          ->where('meta.setor_id',0)->value('meta');
         
          // ********************OTIF*****************************
-        //  Descubrao quantos dia faltampara acabar baseado nos serviços não feitos ainda, o tempo médio de cada uma e o valor final em horas é dividici por 8 horas
+        //  Descubrao quantos dia faltam para acabar baseado nos serviços não feitos ainda, o tempo médio de cada uma e o valor final em horas é dividici por 8 horas
 
         $servicosFaltantes =  ProdutoServico::select('produto_servico.servico_id')
         ->where('produto_servico.produto_id','=',2)
@@ -410,9 +412,13 @@ class ProducaoController extends Controller
                 ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
                 ->where('producao.produto_id',2);
         });
-        $diasFaltantes = ProdutoServico::selectRaw('(sum(produto_servico.tempoMedioMin)/8) as faltamDias')
+        // soma de tempo médio de cada servico / 60 min x 8 horas x (quantidade de pessoas)
+        $diasFaltantes = ProdutoServico::selectRaw('(sum((produto_servico.tempoMedioMin/(480* produto_servico.quantEquipe)))) as faltamDias')
         ->leftjoin('servico','servico.id','=','produto_servico.servico_id')
-        ->whereIn('servico.id',$servicosFaltantes)->value('faltamDias');
+        // ->whereIn('servico.id',$servicosFaltantes)->value('faltamDias');
+        ->whereIn('servico.id',$servicosFaltantes)->toRawSql();
+
+        return  $diasFaltantes;
 
 
         $otif = Producao::select(SetorExecutante::raw('(TIMESTAMPDIFF(DAY,producao.dataPrevista,"'.$now.'") - ('.$diasFaltantes.')) as otif'))
@@ -437,34 +443,42 @@ class ProducaoController extends Controller
         ->where('setor_executante.id_producao',$idProducao)
         ->where('trabalho.trabalhoPausa',0)->value('tempo');
 
-        $percentParado = ($tempoParado * 100)/ $tempoTotalComputado;
+        if($tempoTotalComputado>0)
+        {
+            $percentParado = ($tempoParado * 100)/ $tempoTotalComputado;
+        }else{
+            $percentParado=0;
+        }
+        
 
 
         $metaGeralTempoParado = Meta::select('meta.valor as metaParado')
         ->where('meta.indicador_id',3)
         ->where('meta.setor_id',0)->value('metaParado');
 
-    //****************** Fim Tempo Parado ****************************** */
+        //****************** Fim Tempo Parado ****************************** */
 
 
-    //    INDICADOR PRODUÇÃO POR SETOR
-    //    QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS * POR SETOR *, DESDE O INÍCIO DA PRODUCAO - 
-        $indProducaoSetor = SetorExecutante::select(SetorExecutante::raw("avg((servicoExecutado.quantConcluido)/(TIMESTAMPDIFF(DAY,producao.dataInicio,'".$now."'))) as total,setor.nome,meta.valor")) //MEDIA DA QUANTIDADE DE SERVICO
-        ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
-        ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
-        ->leftjoin('setor', 'setor.id', '=', 'setor_executante.id_setor')
-        ->leftjoin('meta','meta.setor_id','=','setor.id')
-        ->where('producao.id',$idProducao)
-        ->groupBy('setor.nome','meta.valor')->get()->all();
+        //    INDICADOR PRODUÇÃO POR SETOR
 
+        //    QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS * POR SETOR *, DESDE O INÍCIO DA PRODUCAO - 
+            $indProducaoSetor = SetorExecutante::select(SetorExecutante::raw("avg((servicoExecutado.quantConcluido)/(TIMESTAMPDIFF(DAY,producao.dataInicio,'".$now."'))) as total,setor.nome,meta.valor")) //MEDIA DA QUANTIDADE DE SERVICO
+            ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
+            ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
+            ->leftjoin('setor', 'setor.id', '=', 'setor_executante.id_setor')
+            ->leftjoin('meta','meta.setor_id','=','setor.id')
+            ->where('producao.id',$idProducao)
+            ->groupBy('setor.nome','meta.valor')->get()->all();
 
         return ['indicadorProdSetor'=>$indProducaoSetor,'indicadorProdGeral'=>ROUND($indProducaoTotal,2),'metaGeralProd'=>$metaGeralProducao,'otif'=>ROUND($otif,2),'tempoParado'=>ROUND($percentParado,2),'metaParado'=>$metaGeralTempoParado];
+        
     }
     
     
     //FIM INDICADORES GERAIS 
    
     // DEVOLVE INFORMAÇÕES POR SETOR, PASSANDO O ID DO SETOR  
+
     public function estatisticasSetor(Request $request){
 
         $idProducao=$request->idProducao;
@@ -487,7 +501,9 @@ class ProducaoController extends Controller
         ->where('producao.id',$idProducao)->value('total');
         //->where('producao.id',$idProducao)->toSql();
 
-       
+        // Média de servicos produzidos por dia em uma produção especifica
+        // media(quantidade de servicos concluidos /quantos dias desde o inicio da produção)
+
         $now = date('Y/m/d H:i:s', time());
         $indicadorProducao = SetorExecutante::select(SetorExecutante::raw("avg((servicoExecutado.quantConcluido)/(TIMESTAMPDIFF(DAY,producao.dataInicio,'".$now."'))) as total")) 
         ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
@@ -514,7 +530,10 @@ class ProducaoController extends Controller
         //->where('produto_servico.produto_id',$idProduto)->toSql();
 
        if($setorExecutante===null){$setorExecutante=0;};
+
+       // Percentual já executado de servicos, em relação aos servicos previstos; 
        $percentual = 100;//((int) $setorExecutante * 100)/(int) $produtoServico;
+
        $saida = ['svPrevistos'=>$produtoServico,'svExecutados'=>$setorExecutante,'percentual'=>$percentual,'setor'=>$idSetor,'horasTrab'=>ROUND($horasTrabalhadas,2),'horasPrevistas'=>ROUND($horasPrevistas,2),'indicadorProducao'=>round($indicadorProducao,2)];
 
        return $saida ;

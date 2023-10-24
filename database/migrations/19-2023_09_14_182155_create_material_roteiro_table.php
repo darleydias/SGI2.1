@@ -15,7 +15,7 @@ return new class extends Migration
          $table->increments('id');
          $table->integer('roteiro_id')->unsigned();
          $table->integer('material_id')->unsigned();
-
+         $table->integer('quant')->unsigned();
          $table->foreign('roteiro_id')->references('id')->on('roteiro');
          $table->foreign('material_id')->references('id')->on('material');
 

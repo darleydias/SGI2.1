@@ -17,6 +17,7 @@ use App\Http\Controllers\NotaFiscalController;
 use App\Http\Controllers\SetorExecutanteController;
 use App\Http\Controllers\IndicadorController;
 use App\Http\Controllers\MetaController;
+use App\Http\Controllers\importacaoOmieController;
 
 
 
@@ -27,6 +28,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PermissaoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OmieController;
+use App\Http\Controllers\OmieOportunidadeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -166,6 +168,13 @@ Route::delete('/meta/{id}',[MetaController::class,'destroy']);
  Route::put('/cliente/{id}',[ClienteController::class,'update']);
  Route::delete('/cliente/{id}',[ClienteController::class,'destroy']);
 #####
+
+##### OMIE #####
+Route::post('/omie/motivo',[importacaoOmieController::class,'buscaMotivo']);
+Route::post('/omie/oportunidade',[importacaoOmieController::class,'buscaOportunidade']);
+Route::post('/omie/oportunidade/cliente-conquistado',[OmieOportunidadeController::class,'clienteConquistado']);
+Route::get('/omie/oportunidade/ano',[OmieOportunidadeController::class,'anosComOportunidade']);
+
 
 ##### PRODUÇÃO #####
  Route::get('/producao',[ProducaoController::class,'index']);

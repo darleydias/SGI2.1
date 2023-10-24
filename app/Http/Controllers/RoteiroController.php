@@ -45,4 +45,14 @@ class RoteiroController extends Controller
     {
         //
     }
+    public function materialPorSetor(string $id)
+    {
+        $materialSetor = Roteiro::select(Roteiro::raw("SUM(servicoExecutado.quantConcluido) as total"))
+        ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
+        ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
+        ->where('producao.id',$idProducao)->value('total');
+
+        
+    }
+
 }
