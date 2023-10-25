@@ -47,7 +47,7 @@ class OmieOportunidadeController extends Controller
         ->where('omie_oportunidade.nCodMotivo','2100482628')
         ->groupBy(OmieOportunidade::raw('YEARWEEK(dConclusao)'))->get()->all();
 
-        return ['nrSemQuant'=>$semana1,'maior'=>max($maior)];
+        return $semana1;
     }
     
 
