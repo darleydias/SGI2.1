@@ -42,12 +42,17 @@ class OmieOportunidadeController extends Controller
         ->where('omie_oportunidade.nCodMotivo','2100482628')
         ->groupBy(OmieOportunidade::raw('YEARWEEK(dConclusao)'))->get()->all();
         
+        return $semana1;
+    }
+
+    public function clienteConquistadoMaior(Request $request)
+    {
         $maior=OmieOportunidade::select(OmieOportunidade::raw("count(YEARWEEK(dConclusao)) as valor")) 
         ->whereYear('dConclusao','=', $ano)
         ->where('omie_oportunidade.nCodMotivo','2100482628')
         ->groupBy(OmieOportunidade::raw('YEARWEEK(dConclusao)'))->get()->all();
 
-        return $semana1;
+        return max($maior);
     }
     
 

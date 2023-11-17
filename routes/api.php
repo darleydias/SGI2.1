@@ -18,6 +18,8 @@ use App\Http\Controllers\SetorExecutanteController;
 use App\Http\Controllers\IndicadorController;
 use App\Http\Controllers\MetaController;
 use App\Http\Controllers\importacaoOmieController;
+use App\Http\Controllers\InjetoraController;
+use App\Http\Controllers\EstadosInjetoraController;
 
 
 
@@ -174,6 +176,8 @@ Route::post('/omie/motivo',[importacaoOmieController::class,'buscaMotivo']);
 Route::post('/omie/oportunidade',[importacaoOmieController::class,'buscaOportunidade']);
 Route::post('/omie/oportunidade/cliente-conquistado',[OmieOportunidadeController::class,'clienteConquistado']);
 Route::get('/omie/oportunidade/ano',[OmieOportunidadeController::class,'anosComOportunidade']);
+Route::post('/omie/oportunidade/cliente-conquistado-maior',[OmieOportunidadeController::class,'clienteConquistadoMaior']);
+
 
 
 ##### PRODUÇÃO #####
@@ -252,3 +256,18 @@ Route::delete('/setor-executante/{id}',[SetorExecutanteController::class,'destro
  Route::put('/tipoServico/{id}',[TipoServicoController::class,'update']);
  Route::delete('/tipoServico/{id}',[TipoServicoController::class,'destroy']);
 #####
+##### INJETORA #####
+Route::post('/injetora/corrente',[InjetoraController::class,'store']);
+Route::get('/injetora/corrente',[InjetoraController::class,'index']);
+Route::get('/injetora/correnteAtual',[InjetoraController::class,'correnteAtual']);
+Route::post('/injetora/sinteseAcoesInjetora/',[InjetoraController::class,'sinteseAcoesInjetora']);
+##### ESTADOS INJETORA #####
+Route::post('/EstadosInjetoras',[EstadosInjetoraController::class,'store']);
+Route::get('/EstadosInjetoras',[EstadosInjetoraController::class,'index']);
+Route::post('/EstadosInjetoras/dia',[EstadosInjetoraController::class,'estadosInjetoraDia']);
+
+
+
+
+
+
