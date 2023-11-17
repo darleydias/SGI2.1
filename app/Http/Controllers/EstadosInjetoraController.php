@@ -31,9 +31,9 @@ class EstadosInjetoraController extends Controller
 
     public function estadosInjetoraDia(Request $request)
     {
-        // $request->dia
+         
         $estadosInjetora = EstadosInjetora::select("estado","unixtime","id_maquina")
-        ->whereDate('unixtime','2023-11-16')->get()->all();
+        ->whereDate('unixtime',$request->dia)->get()->all();
 
         return $estadosInjetora;
     }
