@@ -31,14 +31,49 @@ class EstadosInjetoraController extends Controller
 
     public function estadosInjetoraDia(Request $request)
     {
-         
-        $estadosInjetora = EstadosInjetora::select("estado","unixtime","id_maquina")
+        $tempoTotal = EstadosInjetora::select(EstadosInjetora::raw('(TIMESTAMPDIFF(minute,MIN(unixtime),MAX(unixtime))) as tempoTotal'))
+        ->whereDate('unixtime',$request->dia)->value('tempoTotal');
+        
+        $tempos = EstadosInjetora::select(EstadosInjetora::raw('unixtime,estado'))
         ->whereDate('unixtime',$request->dia)->get()->all();
 
-        return $estadosInjetora;
+        $primeiroTempo = EstadosInjetora::select(EstadosInjetora::raw('unixtime'))
+        ->whereDate('unixtime',$request->dia)->first();
+
+        $ultimo = $primeiroTempo->unixtime;
+
+        $ultimoData = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $ultimo);
+
+        $currentTime = \Carbon\Carbon::createFromFormat("Y-m-d H:i:s", date("Y-m-d H:i:00"));
+
+        $minuteDiff = $ultimoData->diffInMinutes($currentTime);
+
+        $arr = array();
+
+        for($i=1;$i<count($tempos);$i++){
+            $tempoGravado = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $tempos[$i]->unixtime);
+            $minuteDiff = $ultimoData->diffInMinutes($tempoGravado);
+            array_push($arr, (($minuteDiff*100)/$tempoTotal));
+            $ultimoData = $tempoGravado;
+        }
+        return ['tempoTotal'=>$tempoTotal,'tempos'=>$tempos,'primeiroTempo'=>$primeiroTempo,'intervalos'=>$arr];
+        
+   
+   
+   
+   
+   
+        
+        // ->toRawSql();
+        
+        
+        // $percentual = EstadosInjetora::select(EstadosInjetora::raw("estado,unixtime as percentual,id_maquina"))
+            
+
+            
+            // return ['estado'=>$estadosInjetora->estado,'percentual'=>$estadosInjetora->percentual];
     }
 
-    
 
     /**
      * Display the specified resource.
