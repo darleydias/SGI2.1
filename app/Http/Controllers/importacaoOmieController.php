@@ -46,7 +46,10 @@ class importacaoOmieController extends Controller
         $itensGravados=0;
 
         $client = new \GuzzleHttp\Client(['headers' => [ 'Content-Type' => 'application/json' ]]);
-        $body['call'] = 'ListarOportunidades';$body['app_key'] = '257661075672';$body['app_secret'] = '1da646f79ab9e8299292ee8ff6bb4d4e';$body['param'] = array(['pagina'=>1,'registros_por_pagina'=>20]);  
+        $body['call'] = 'ListarOportunidades';
+        $body['app_key'] = '257661075672';
+        $body['app_secret'] = '1da646f79ab9e8299292ee8ff6bb4d4e';
+        $body['param'] = array(['pagina'=>1,'registros_por_pagina'=>20]);  
         $result = $client->post('https://app.omie.com.br/api/v1/crm/oportunidades/', [ 'body' => json_encode($body) ]);
         $resposta = json_decode((string) $result->getBody());
         $quantPaginas = $resposta->total_de_paginas;

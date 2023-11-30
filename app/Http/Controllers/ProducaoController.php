@@ -386,10 +386,11 @@ class ProducaoController extends Controller
         $idProducao=$request->idProducao;
 
         // INDICADOR PRODUÇÃO
-        // QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS GERAL(SOMA DE TODOS SETORES), DESDE O INÍCIO DA PRODUCAO - 
+
+        // QUANTIDADE MEDIA DIÁRIA DE SERVICOS EXCUTADOS GERAL(SOMA DE SERVICOS DE TODOS SETORES), DESDE O INÍCIO DA PRODUCAO 
 
          $now = date('Y/m/d H:i:s', time());
-         //MEDIA DA QUANTIDADE DE SERVICO POR DIA
+         //MEDIA DA QUANTIDADE DE SERVICO EXECUTADO POR DIA
          $indProducaoTotal = SetorExecutante::select(SetorExecutante::raw("avg((servicoExecutado.quantConcluido)/(TIMESTAMPDIFF(DAY,producao.dataInicio,'".$now."'))) as total")) 
          ->leftjoin('servicoExecutado','servicoExecutado.id_setorExecutante','=','setor_executante.id')
          ->leftjoin('producao','producao.id','=','setor_executante.id_producao')
@@ -415,11 +416,8 @@ class ProducaoController extends Controller
         // soma de tempo médio de cada servico / 60 min x 8 horas x (quantidade de pessoas)
         $diasFaltantes = ProdutoServico::selectRaw('(sum((produto_servico.tempoMedioMin/(480* produto_servico.quantEquipe)))) as faltamDias')
         ->leftjoin('servico','servico.id','=','produto_servico.servico_id')
-        // ->whereIn('servico.id',$servicosFaltantes)->value('faltamDias');
-        ->whereIn('servico.id',$servicosFaltantes)->toRawSql();
-
-        return  $diasFaltantes;
-
+        ->whereIn('servico.id',$servicosFaltantes)->value('faltamDias');
+        //->whereIn('servico.id',$servicosFaltantes)->toRawSql();
 
         $otif = Producao::select(SetorExecutante::raw('(TIMESTAMPDIFF(DAY,producao.dataPrevista,"'.$now.'") - ('.$diasFaltantes.')) as otif'))
         ->where('producao.id','=', $idProducao)
@@ -450,7 +448,6 @@ class ProducaoController extends Controller
             $percentParado=0;
         }
         
-
 
         $metaGeralTempoParado = Meta::select('meta.valor as metaParado')
         ->where('meta.indicador_id',3)
@@ -484,12 +481,13 @@ class ProducaoController extends Controller
         $idProducao=$request->idProducao;
         $idSetor=$request->idSetor;
         // devolve a Soma todos os servicos previstos segundo o roteiro e calcula 
-        // o percentual de todo servicos feitos em uma cada seção        
+        // o percentual de todo servicos feitos em  cada uma seção        
         $producao = Producao::findOrFail($idProducao);
         $idProduto = $producao->produto_id;
         
-        // QUANTIDADE DE SERVICOS PREVISTA POR SETOR
-        $produtoServico = ProdutoServico::select(ProdutoServico::raw("SUM(produto_servico.quant) as total"))
+        // QUANTIDADE DE SERVICOS PARA UM PRODUTO PREVISTA POR SETOR
+
+        $produtoServico = ProdutoServico::select(ProdutoServico::raw("SUM(produto_servico.quantEquipe) as total"))
         ->where('produto_servico.setor_id',$idSetor)
         ->where('produto_servico.produto_id',$idProduto)->value('total');
 
@@ -524,7 +522,7 @@ class ProducaoController extends Controller
                 
         // TEMPO PREVISTO(BASEADO NA SÉRIE HISTÓRICA) POR SERVICO-SETOR
 
-        $horasPrevistas = ProdutoServico::select(ProdutoServico::raw("SUM((produto_servico.quant * produto_servico.tempoMedioMin)/60) as total"))
+        $horasPrevistas = ProdutoServico::select(ProdutoServico::raw("SUM((produto_servico.quantEquipe * produto_servico.tempoMedioMin)/60) as total"))
         ->where('produto_servico.setor_id',$idSetor)
         ->where('produto_servico.produto_id',$idProduto)->value('total');
         //->where('produto_servico.produto_id',$idProduto)->toSql();

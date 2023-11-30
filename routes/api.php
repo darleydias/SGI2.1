@@ -177,6 +177,8 @@ Route::post('/omie/oportunidade',[importacaoOmieController::class,'buscaOportuni
 Route::post('/omie/oportunidade/cliente-conquistado',[OmieOportunidadeController::class,'clienteConquistado']);
 Route::get('/omie/oportunidade/ano',[OmieOportunidadeController::class,'anosComOportunidade']);
 Route::post('/omie/oportunidade/cliente-conquistado-maior',[OmieOportunidadeController::class,'clienteConquistadoMaior']);
+Route::post('/omie/oportunidade/ticket',[OmieOportunidadeController::class,'ticket']);
+
 
 
 

@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
         $this->call([ServicoSeeder::class]);
         $this->call([MaterialSeeder::class]);
         $this->call([RoteiroSeeder::class]);
-        \App\Models\MaterialRoteiro::factory(10)->create();
+        $this->call([MaterialRoteiroSeeder::class]);
         $this->call([ServicoSetorSeeder::class]);
         $this->call([RoteiroSetorSeeder::class]);
         $this->call([ServicoExecutadoSeeder::class]);

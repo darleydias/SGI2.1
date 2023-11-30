@@ -45,13 +45,26 @@ class OmieOportunidadeController extends Controller
         return $semana1;
     }
 
+    public function ticket(Request $request)
+    {
+        // passa-se o mes ano e recebe-se a soma por semana dos registros daquele mês
+        $mes=$request->mes;
+        $ano=$request->ano;
+        $semana1=OmieOportunidade::select(OmieOportunidade::raw("YEARWEEK(dConclusao) semana,sum(nTicket) as regSemana")) 
+        ->whereYear('dConclusao','=', $ano)
+        ->whereMonth('dConclusao','=', $mes)
+        ->where('omie_oportunidade.nCodMotivo','2100482628')
+        ->groupBy(OmieOportunidade::raw('YEARWEEK(dConclusao)'))->get()->all();
+        
+        return $semana1;
+    }
+
     public function clienteConquistadoMaior(Request $request)
     {
         $maior=OmieOportunidade::select(OmieOportunidade::raw("count(YEARWEEK(dConclusao)) as valor")) 
         ->whereYear('dConclusao','=', $ano)
         ->where('omie_oportunidade.nCodMotivo','2100482628')
         ->groupBy(OmieOportunidade::raw('YEARWEEK(dConclusao)'))->get()->all();
-
         return max($maior);
     }
     
